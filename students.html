@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Students – DSU AI&amp;ML Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .page-content{position:relative;z-index:1;padding:0 2rem 5rem}
+    .count-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;margin-bottom:1.2rem}
+    .count-info{font-size:.85rem;color:var(--muted)}
+    .count-info strong{color:var(--acc);font-family:var(--ff-d);font-size:1rem}
+    .view-toggle{display:flex;gap:.3rem;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.25rem}
+    .view-btn{background:none;border:none;padding:.4rem .7rem;border-radius:6px;color:var(--muted);font-size:.95rem;transition:all .2s;cursor:pointer}
+    .view-btn.active{background:rgba(56,189,248,.15);color:var(--acc)}
+
+    /* Grid View */
+    .students-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem}
+    .stu-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+      padding:1.4rem;transition:transform .25s,border-color .25s,box-shadow .25s;cursor:default}
+    .stu-card:hover{transform:translateY(-4px);border-color:var(--border2);box-shadow:0 10px 36px rgba(56,189,248,.09)}
+    .sc-head{display:flex;align-items:center;gap:.9rem;margin-bottom:1rem}
+    .sc-avatar{width:46px;height:46px;border-radius:50%;background:var(--grad);
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--ff-d);font-size:1rem;font-weight:800;color:var(--white);flex-shrink:0}
+    .sc-name{font-family:var(--ff-d);font-size:.95rem;font-weight:700;color:var(--white);margin-bottom:.25rem}
+    .sc-reg{font-size:.72rem;color:var(--acc);font-weight:600;letter-spacing:.04em}
+    .sc-info{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+    .sc-field{background:rgba(4,12,24,.5);border-radius:7px;padding:.5rem .6rem}
+    .sc-lbl{font-size:.63rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-weight:600}
+    .sc-val{font-size:.82rem;color:var(--text);font-weight:500;margin-top:.1rem}
+    .sc-cgpa{font-family:var(--ff-d);font-weight:800;font-size:.95rem;background:var(--grad);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .mini-bar{height:4px;border-radius:100px;margin-top:.35rem;background:rgba(56,189,248,.1);overflow:hidden}
+    .mini-fill{height:100%;border-radius:100px;transition:width .8s ease}
+
+    /* List View */
+    .students-list{display:none}
+    .view-grid .students-grid{display:grid}
+    .view-grid .students-list{display:none}
+    .view-list .students-grid{display:none}
+    .view-list .students-list{display:block}
+
+    /* Loading skeleton */
+    .skeleton{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);
+      background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--r);height:180px}
+    .skel-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem}
+  </style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <a href="index.html" class="nav-brand">
+    <div class="logo-orb"></div>
+    <div><span class="nav-dept">AI &amp; ML Department</span><span class="nav-uni">Dhanalakshmi Srinivasan University</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li><li><a href="students.html">Students</a></li>
+    <li><a href="faculty.html">Faculty</a></li><li><a href="timetable.html">Timetable</a></li>
+    <li><a href="gallery.html">Gallery</a></li><li><a href="admin.html" class="nav-admin">⚙ Admin</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-header">
+  <div class="section-label">// Student Directory</div>
+  <h1 class="section-title">All <span class="grad-text">Students</span></h1>
+  <p class="section-sub" style="margin:0 auto">Browse, search and filter all AIML department students. Data loads instantly from the database.</p>
+</div>
+
+<div class="page-content">
+  <div class="container">
+    <!-- Search & Filter Bar -->
+    <div class="search-bar">
+      <div class="search-input-wrap">
+        <span class="search-ico">🔍</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search by name or reg no…" oninput="filterStudents()"/>
+      </div>
+      <select class="filter-select" id="filterYear" onchange="filterStudents()">
+        <option value="">All Years</option>
+        <option value="I">I Year</option><option value="II">II Year</option>
+        <option value="III">III Year</option><option value="IV">IV Year</option>
+      </select>
+      <select class="filter-select" id="filterSection" onchange="filterStudents()">
+        <option value="">All Sections</option>
+        <option value="A">Section A</option><option value="B">Section B</option>
+      </select>
+      <select class="filter-select" id="filterStatus" onchange="filterStudents()">
+        <option value="">All Status</option>
+        <option value="active">Active</option><option value="inactive">Inactive</option>
+      </select>
+    </div>
+
+    <!-- Count + View Toggle -->
+    <div class="count-bar">
+      <div class="count-info">Showing <strong id="countShown">–</strong> of <strong id="countTotal">–</strong> students</div>
+      <div class="view-toggle">
+        <button class="view-btn active" id="btnGrid" onclick="setView('grid')" title="Grid View">⊞</button>
+        <button class="view-btn" id="btnList" onclick="setView('list')" title="List View">☰</button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div id="studentsWrap" class="view-grid">
+      <!-- Skeleton loader -->
+      <div class="skel-grid" id="skelLoader">
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      </div>
+      <div class="students-grid" id="studentsGrid"></div>
+      <div class="students-list tbl-wrap" id="studentsList">
+        <table><thead><tr>
+          <th>Reg No</th><th>Name</th><th>Year</th><th>Section</th><th>CGPA</th><th>Attendance</th><th>Status</th>
+        </tr></thead>
+        <tbody id="studentsTableBody"></tbody></table>
+      </div>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <div class="es-icon">🔍</div><p>No students match your search. Try different filters.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="logo-orb sm"></div>
+      <div><span class="fb-name">DSU · AI &amp; ML Department</span><span class="fb-addr">Samayapuram, Tiruchirappalli – 621 112</span></div>
+    </div>
+    <div class="footer-links"><a href="index.html">Home</a><a href="faculty.html">Faculty</a><a href="timetable.html">Timetable</a></div>
+    <p class="footer-copy">© 2025 Dhanalakshmi Srinivasan University. All rights reserved.</p>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+<script src="shared.js"></script>
+<script>
+let allStudents=[];
+let currentView='grid';
+
+async function loadStudents(){
+  try{
+    const d=await apiFetch('/students');
+    document.getElementById('skelLoader').style.display='none';
+    if(d.success){allStudents=d.students;document.getElementById('countTotal').textContent=d.count;renderStudents(allStudents);}
+    else showToast('Failed to load students','error');
+  }catch{
+    document.getElementById('skelLoader').style.display='none';
+    document.getElementById('studentsGrid').innerHTML='<div class="err-box"><span>⚠️</span><p>Cannot connect to server. Make sure the backend is running on port 5000.</p></div>';
+  }
+}
+
+function filterStudents(){
+  const q=document.getElementById('searchInput').value.toLowerCase().trim();
+  const yr=document.getElementById('filterYear').value;
+  const sc=document.getElementById('filterSection').value;
+  const st=document.getElementById('filterStatus').value;
+  const filtered=allStudents.filter(s=>{
+    const matchQ=!q||(s.name||'').toLowerCase().includes(q)||(s.reg_no||'').toLowerCase().includes(q);
+    const matchY=!yr||(s.year||'')=== yr;
+    const matchS=!sc||(s.section||'').toUpperCase()===sc;
+    const matchSt=!st||(s.status||'').toLowerCase()===st;
+    return matchQ&&matchY&&matchS&&matchSt;
+  });
+  renderStudents(filtered);
+}
+
+function renderStudents(list){
+  document.getElementById('countShown').textContent=list.length;
+  const grid=document.getElementById('studentsGrid');
+  const tbody=document.getElementById('studentsTableBody');
+  const empty=document.getElementById('emptyState');
+  if(!list.length){grid.innerHTML='';tbody.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+
+  // Grid
+  grid.innerHTML=list.map(s=>{
+    const init=(s.name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    const att=s.attendance||0;
+    const attCol=att>=75?'linear-gradient(90deg,#34d399,#38bdf8)':att>=60?'linear-gradient(90deg,#fbbf24,#fb923c)':'linear-gradient(90deg,#f87171,#ef4444)';
+    const active=(s.status||'').toLowerCase()==='active';
+    return `<div class="stu-card">
+      <div class="sc-head">
+        <div class="sc-avatar">${init}</div>
+        <div><div class="sc-name">${s.name}</div><div class="sc-reg">${s.reg_no}</div></div>
+        <span class="badge ${active?'badge-green':'badge-red'}" style="margin-left:auto">${active?'Active':'Inactive'}</span>
+      </div>
+      <div class="sc-info">
+        <div class="sc-field"><div class="sc-lbl">Year</div><div class="sc-val">${s.year||'–'} Year</div></div>
+        <div class="sc-field"><div class="sc-lbl">Section</div><div class="sc-val">${s.section||'–'}</div></div>
+        <div class="sc-field"><div class="sc-lbl">CGPA</div><div class="sc-val sc-cgpa">${s.cgpa||'–'}</div></div>
+        <div class="sc-field"><div class="sc-lbl">Attendance</div><div class="sc-val">${att}%<div class="mini-bar"><div class="mini-fill" style="width:${att}%;background:${attCol}"></div></div></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Table
+  tbody.innerHTML=list.map(s=>{
+    const active=(s.status||'').toLowerCase()==='active';
+    return `<tr>
+      <td class="td-reg">${s.reg_no}</td>
+      <td class="td-name">${s.name}</td>
+      <td>${s.year||'–'}</td><td>${s.section||'–'}</td>
+      <td><span style="font-family:var(--ff-d);font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent">${s.cgpa||'–'}</span></td>
+      <td>${s.attendance||0}%</td>
+      <td><span class="badge ${active?'badge-green':'badge-red'}">${active?'Active':'Inactive'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function setView(v){
+  currentView=v;
+  document.getElementById('studentsWrap').className=`view-${v}`;
+  document.getElementById('btnGrid').classList.toggle('active',v==='grid');
+  document.getElementById('btnList').classList.toggle('active',v==='list');
+}
+
+loadStudents();
+</script>
+</body>
+</html>

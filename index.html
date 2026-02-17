@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DSU – AI&amp;ML Department Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <link rel="stylesheet" href="home.css"/>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav class="navbar" id="navbar">
+  <a href="index.html" class="nav-brand">
+    <div class="logo-orb"></div>
+    <div><span class="nav-dept">AI &amp; ML Department</span><span class="nav-uni">Dhanalakshmi Srinivasan University</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="students.html">Students</a></li>
+    <li><a href="faculty.html">Faculty</a></li>
+    <li><a href="timetable.html">Timetable</a></li>
+    <li><a href="gallery.html">Gallery</a></li>
+    <li><a href="admin.html" class="nav-admin">⚙ Admin</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge"><span class="badge-dot"></span>Artificial Intelligence &amp; Machine Learning</div>
+    <h1 class="hero-title">Shaping the<br/><span class="grad-text">Intelligence</span><br/>of Tomorrow</h1>
+    <p class="hero-sub">Official portal for the Department of AI &amp; ML — School of Engineering &amp; Technology, Dhanalakshmi Srinivasan University, Tiruchirappalli.</p>
+    <div class="hero-cta">
+      <a href="students.html" class="btn-primary">Student Directory →</a>
+      <a href="faculty.html" class="btn-ghost">Meet Faculty</a>
+    </div>
+  </div>
+  <div class="hero-visual"><canvas id="neuralCanvas" width="420" height="420"></canvas></div>
+</section>
+
+<div class="stats-strip" id="statsStrip">
+  <div class="stat"><span class="stat-num" data-target="320">0</span><span class="stat-label">Students</span></div>
+  <div class="stat-div"></div>
+  <div class="stat"><span class="stat-num" data-target="9">0</span><span class="stat-label">Faculty</span></div>
+  <div class="stat-div"></div>
+  <div class="stat"><span class="stat-num" data-target="15">0</span><span class="stat-label">Research Projects</span></div>
+  <div class="stat-div"></div>
+  <div class="stat"><span class="stat-num" data-target="94">0</span><span class="stat-label">% Placement</span></div>
+</div>
+
+<section class="lookup-section">
+  <div class="container">
+    <div class="section-label">// Quick Access</div>
+    <h2 class="section-title">Student <span class="grad-text">Lookup</span></h2>
+    <p class="section-sub">Enter a registration number to instantly fetch complete student details.</p>
+    <div class="lookup-box">
+      <div class="input-wrap"><span class="input-ico">🎓</span>
+        <input type="text" id="regInput" class="reg-input" placeholder="e.g. 2122AIML001" maxlength="15" autocomplete="off"/>
+      </div>
+      <button class="btn-primary" onclick="quickLookup()">
+        <span id="btnTxt">Search</span><span class="spinner" id="spin"></span>
+      </button>
+    </div>
+    <div class="lookup-hint">Format: <code>YYYYAIMLNNN</code> · e.g. <code>2122AIML001</code></div>
+    <div id="resultArea"></div>
+  </div>
+</section>
+
+<section class="features-section">
+  <div class="container">
+    <div class="section-label">// Portal Modules</div>
+    <h2 class="section-title">Everything You <span class="grad-text">Need</span></h2>
+    <div class="feat-grid">
+      <a href="students.html" class="feat-card reveal"><div class="feat-icon">👨‍🎓</div><h3>Student Directory</h3><p>Browse, search and filter all 320+ students by year, section and name instantly.</p><span class="feat-arrow">→</span></a>
+      <a href="faculty.html" class="feat-card reveal"><div class="feat-icon">👩‍🏫</div><h3>Faculty</h3><p>Meet our expert faculty members with their qualifications, designations and subjects handled.</p><span class="feat-arrow">→</span></a>
+      <a href="timetable.html" class="feat-card reveal"><div class="feat-icon">📅</div><h3>Timetable</h3><p>View semester-wise class schedules for all years and sections at a glance.</p><span class="feat-arrow">→</span></a>
+      <a href="gallery.html" class="feat-card reveal"><div class="feat-icon">🖼️</div><h3>Gallery</h3><p>Department events, hackathons, workshops and memorable milestone moments.</p><span class="feat-arrow">→</span></a>
+      <a href="admin.html" class="feat-card fc-admin reveal"><div class="feat-icon">🔐</div><h3>Admin Panel</h3><p>Securely manage student records, faculty profiles, timetables and announcements.</p><span class="feat-arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="logo-orb sm"></div>
+      <div><span class="fb-name">DSU · AI &amp; ML Department</span><span class="fb-addr">Samayapuram, Tiruchirappalli – 621 112, Tamil Nadu</span></div>
+    </div>
+    <div class="footer-links">
+      <a href="students.html">Students</a><a href="faculty.html">Faculty</a>
+      <a href="timetable.html">Timetable</a><a href="gallery.html">Gallery</a>
+    </div>
+    <p class="footer-copy">© 2025 Dhanalakshmi Srinivasan University · School of Engineering &amp; Technology. All rights reserved.</p>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+<script src="shared.js"></script><script src="home.js"></script>
+</body>
+</html>

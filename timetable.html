@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Timetable – DSU AI&amp;ML Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .page-content{position:relative;z-index:1;padding:0 2rem 5rem}
+    .tt-controls{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.8rem;
+      background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.2rem 1.5rem}
+    .tt-tab-group{display:flex;gap:.4rem;flex-wrap:wrap}
+    .tt-tab{padding:.45rem 1.1rem;border-radius:8px;border:1px solid var(--border);
+      background:transparent;color:var(--muted);font-size:.82rem;font-weight:600;
+      cursor:pointer;transition:all .2s;font-family:var(--ff-d)}
+    .tt-tab.active{background:rgba(56,189,248,.12);border-color:var(--acc);color:var(--acc)}
+    .tt-tab:hover:not(.active){background:rgba(56,189,248,.05);color:var(--text)}
+    .tt-label{font-size:.72rem;color:var(--muted);font-weight:600;text-transform:uppercase;
+      letter-spacing:.08em;margin-bottom:.5rem}
+    .tt-sep{width:1px;background:var(--border);margin:0 .5rem}
+
+    .timetable-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+    .timetable{width:100%;border-collapse:collapse;min-width:750px;font-size:.83rem}
+    .timetable th{background:var(--card2);padding:.9rem 1rem;text-align:center;
+      font-family:var(--ff-d);font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;
+      color:var(--muted);font-weight:700;border-bottom:1px solid var(--border);
+      border-right:1px solid var(--border)}
+    .timetable th.day-col{text-align:left;min-width:90px}
+    .timetable td{padding:.8rem .85rem;border-bottom:1px solid var(--border);
+      border-right:1px solid var(--border);text-align:center;vertical-align:middle;
+      transition:background .15s}
+    .timetable td.day-label{font-family:var(--ff-d);font-weight:700;color:var(--white);
+      text-align:left;font-size:.82rem;background:rgba(56,189,248,.04)}
+    .timetable tr:last-child td{border-bottom:none}
+    .timetable tr:hover td{background:rgba(56,189,248,.03)}
+    .timetable td:last-child,.timetable th:last-child{border-right:none}
+
+    .period-cell{border-radius:7px;padding:.45rem .6rem;font-size:.78rem;font-weight:600;line-height:1.3}
+    .period-cell .sub-code{font-size:.65rem;font-weight:700;opacity:.7;display:block}
+    .period-cell .faculty-name{font-size:.65rem;font-weight:500;opacity:.6;display:block;margin-top:.1rem}
+    .pc-ai{background:rgba(56,189,248,.1);color:var(--acc);border:1px solid rgba(56,189,248,.18)}
+    .pc-ml{background:rgba(129,140,248,.1);color:var(--acc2);border:1px solid rgba(129,140,248,.18)}
+    .pc-math{background:rgba(52,211,153,.1);color:var(--acc3);border:1px solid rgba(52,211,153,.18)}
+    .pc-lab{background:rgba(251,191,36,.1);color:var(--warn);border:1px solid rgba(251,191,36,.18)}
+    .pc-break{background:rgba(100,116,139,.1);color:var(--muted);border:1px solid rgba(100,116,139,.15)}
+    .pc-elec{background:rgba(244,114,182,.1);color:#f472b6;border:1px solid rgba(244,114,182,.18)}
+    .pc-empty{color:var(--muted);font-size:.75rem}
+
+    .today-row td{background:rgba(56,189,248,.04)!important}
+    .today-row td.day-label{background:rgba(56,189,248,.08)!important;color:var(--acc)!important}
+    .today-chip{font-size:.6rem;padding:.1rem .45rem;background:var(--acc);color:var(--white);
+      border-radius:4px;margin-left:.4rem;vertical-align:middle}
+
+    .legend{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.2rem}
+    .leg-item{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--muted)}
+    .leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <a href="index.html" class="nav-brand">
+    <div class="logo-orb"></div>
+    <div><span class="nav-dept">AI &amp; ML Department</span><span class="nav-uni">Dhanalakshmi Srinivasan University</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li><li><a href="students.html">Students</a></li>
+    <li><a href="faculty.html">Faculty</a></li><li><a href="timetable.html">Timetable</a></li>
+    <li><a href="gallery.html">Gallery</a></li><li><a href="admin.html" class="nav-admin">⚙ Admin</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-header">
+  <div class="section-label">// Academic Schedule</div>
+  <h1 class="section-title">Class <span class="grad-text">Timetable</span></h1>
+  <p class="section-sub" style="margin:0 auto">Semester-wise schedules for all years and sections.</p>
+</div>
+
+<div class="page-content">
+  <div class="container">
+    <div class="tt-controls">
+      <div>
+        <div class="tt-label">Year</div>
+        <div class="tt-tab-group" id="yearTabs">
+          <button class="tt-tab active" onclick="switchTab('year','I',this)">I Year</button>
+          <button class="tt-tab" onclick="switchTab('year','II',this)">II Year</button>
+          <button class="tt-tab" onclick="switchTab('year','III',this)">III Year</button>
+          <button class="tt-tab" onclick="switchTab('year','IV',this)">IV Year</button>
+        </div>
+      </div>
+      <div class="tt-sep"></div>
+      <div>
+        <div class="tt-label">Section</div>
+        <div class="tt-tab-group" id="sectionTabs">
+          <button class="tt-tab active" onclick="switchTab('section','A',this)">Section A</button>
+          <button class="tt-tab" onclick="switchTab('section','B',this)">Section B</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="timetable-wrap">
+      <table class="timetable" id="ttTable">
+        <thead id="ttHead"></thead>
+        <tbody id="ttBody"></tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(56,189,248,.4)"></div>AI / Deep Learning</div>
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(129,140,248,.4)"></div>Machine Learning</div>
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(52,211,153,.4)"></div>Mathematics</div>
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(251,191,36,.4)"></div>Lab / Practical</div>
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(244,114,182,.4)"></div>Elective</div>
+      <div class="leg-item"><div class="leg-dot" style="background:rgba(100,116,139,.3)"></div>Break / Free</div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="logo-orb sm"></div>
+      <div><span class="fb-name">DSU · AI &amp; ML Department</span><span class="fb-addr">Samayapuram, Tiruchirappalli – 621 112</span></div>
+    </div>
+    <div class="footer-links"><a href="index.html">Home</a><a href="students.html">Students</a><a href="faculty.html">Faculty</a></div>
+    <p class="footer-copy">© 2025 Dhanalakshmi Srinivasan University. All rights reserved.</p>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+<script src="shared.js"></script>
+<script>
+let selYear='I', selSection='A';
+const TODAY=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+
+const PERIODS=['8:00–8:50','8:50–9:40','9:40–9:50','9:50–10:40','10:40–11:30','11:30–12:20','12:20–1:00','1:00–1:50','1:50–2:40','2:40–3:30'];
+const PERIOD_TYPES=['class','class','break','class','class','class','break','class','class','class'];
+const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+// Timetable data — update these with your actual schedule
+const SCHEDULES={
+  'I-A':{
+    Monday:   [mkP('Calculus','MA3151','Dr. Priya','math'),mkP('Physics','PH3151','Dr. Raj','elec'),null,mkP('Programming','CS3151','Prof. Kumar','ai'),mkP('Programming','CS3151','Prof. Kumar','ai'),mkP('English','HS3151','Dr. Meena','elec'),null,mkP('Lab','CS3111','Prof. Kumar','lab'),mkP('Lab','CS3111','Prof. Kumar','lab'),mkP('Lab','CS3111','Prof. Kumar','lab')],
+    Tuesday:  [mkP('Physics','PH3151','Dr. Raj','elec'),mkP('Calculus','MA3151','Dr. Priya','math'),null,mkP('English','HS3151','Dr. Meena','elec'),mkP('Calculus','MA3151','Dr. Priya','math'),mkP('Programming','CS3151','Prof. Kumar','ai'),null,mkP('Physics Lab','PH3111','Dr. Raj','lab'),mkP('Physics Lab','PH3111','Dr. Raj','lab'),mkP('Mentoring','','','break')],
+    Wednesday:[mkP('Programming','CS3151','Prof. Kumar','ai'),mkP('English','HS3151','Dr. Meena','elec'),null,mkP('Calculus','MA3151','Dr. Priya','math'),mkP('Physics','PH3151','Dr. Raj','elec'),mkP('Calculus','MA3151','Dr. Priya','math'),null,mkP('English Lab','HS3111','Dr. Meena','lab'),mkP('English Lab','HS3111','Dr. Meena','lab'),mkP('Sports/NCC','','','break')],
+    Thursday: [mkP('English','HS3151','Dr. Meena','elec'),mkP('Programming','CS3151','Prof. Kumar','ai'),null,mkP('Physics','PH3151','Dr. Raj','elec'),mkP('English','HS3151','Dr. Meena','elec'),mkP('Calculus','MA3151','Dr. Priya','math'),null,mkP('Computing Lab','CS3111','Prof. Kumar','lab'),mkP('Computing Lab','CS3111','Prof. Kumar','lab'),mkP('Computing Lab','CS3111','Prof. Kumar','lab')],
+    Friday:   [mkP('Calculus','MA3151','Dr. Priya','math'),mkP('Physics','PH3151','Dr. Raj','elec'),null,mkP('Programming','CS3151','Prof. Kumar','ai'),mkP('Calculus','MA3151','Dr. Priya','math'),mkP('English','HS3151','Dr. Meena','elec'),null,mkP('Library/Free','','','break'),mkP('Library/Free','','','break'),mkP('Tutorial','','','break')],
+    Saturday: [mkP('Programming','CS3151','Prof. Kumar','ai'),mkP('Physics','PH3151','Dr. Raj','elec'),null,mkP('English','HS3151','Dr. Meena','elec'),mkP('Calculus','MA3151','Dr. Priya','math'),null,null,null,null,null],
+  },
+  'III-A':{
+    Monday:   [mkP('Deep Learning','CS3551','Dr. Ananthi','ai'),mkP('NLP','CS3552','Prof. Kavitha','ml'),null,mkP('Big Data','CS3553','Dr. Rajkumar','ml'),mkP('IoT','CS3554','Prof. Priya','elec'),mkP('Deep Learning','CS3551','Dr. Ananthi','ai'),null,mkP('DL Lab','CS3511','Dr. Ananthi','lab'),mkP('DL Lab','CS3511','Dr. Ananthi','lab'),mkP('DL Lab','CS3511','Dr. Ananthi','lab')],
+    Tuesday:  [mkP('NLP','CS3552','Prof. Kavitha','ml'),mkP('Deep Learning','CS3551','Dr. Ananthi','ai'),null,mkP('IoT','CS3554','Prof. Priya','elec'),mkP('Big Data','CS3553','Dr. Rajkumar','ml'),mkP('NLP','CS3552','Prof. Kavitha','ml'),null,mkP('NLP Lab','CS3512','Prof. Kavitha','lab'),mkP('NLP Lab','CS3512','Prof. Kavitha','lab'),mkP('NLP Lab','CS3512','Prof. Kavitha','lab')],
+    Wednesday:[mkP('Big Data','CS3553','Dr. Rajkumar','ml'),mkP('IoT','CS3554','Prof. Priya','elec'),null,mkP('Deep Learning','CS3551','Dr. Ananthi','ai'),mkP('NLP','CS3552','Prof. Kavitha','ml'),mkP('Big Data','CS3553','Dr. Rajkumar','ml'),null,mkP('IoT Lab','CS3513','Prof. Priya','lab'),mkP('IoT Lab','CS3513','Prof. Priya','lab'),mkP('Mentoring','','','break')],
+    Thursday: [mkP('IoT','CS3554','Prof. Priya','elec'),mkP('Big Data','CS3553','Dr. Rajkumar','ml'),null,mkP('NLP','CS3552','Prof. Kavitha','ml'),mkP('Deep Learning','CS3551','Dr. Ananthi','ai'),mkP('IoT','CS3554','Prof. Priya','elec'),null,mkP('Library','','','break'),mkP('Tutorial','','','break'),mkP('Self Study','','','break')],
+    Friday:   [mkP('Deep Learning','CS3551','Dr. Ananthi','ai'),mkP('NLP','CS3552','Prof. Kavitha','ml'),null,mkP('Big Data','CS3553','Dr. Rajkumar','ml'),mkP('IoT','CS3554','Prof. Priya','elec'),mkP('Deep Learning','CS3551','Dr. Ananthi','ai'),null,mkP('Project Work','','','lab'),mkP('Project Work','','','lab'),mkP('Project Work','','','lab')],
+    Saturday: [mkP('NLP','CS3552','Prof. Kavitha','ml'),mkP('Big Data','CS3553','Dr. Rajkumar','ml'),null,mkP('Deep Learning','CS3551','Dr. Ananthi','ai'),mkP('IoT','CS3554','Prof. Priya','elec'),null,null,null,null,null],
+  }
+};
+
+// Default fallback schedule generator
+function getSchedule(year,sec){
+  const key=`${year}-${sec}`;
+  if(SCHEDULES[key])return SCHEDULES[key];
+  // Generate a generic schedule
+  const subjects=[mkP('AI Fundamentals','AI001','Dr. Ananthi','ai'),mkP('ML Algorithms','ML001','Prof. Kavitha','ml'),mkP('Mathematics','MA001','Dr. Priya','math'),mkP('Programming','CS001','Prof. Kumar','ai'),mkP('Elective','EL001','Dr. Rajkumar','elec')];
+  const sched={};
+  DAYS.forEach((day,di)=>{
+    sched[day]=PERIODS.map((_,pi)=>{
+      if(PERIOD_TYPES[pi]==='break')return null;
+      if(pi>=7&&di>=4)return null;
+      return subjects[(di*3+pi)%subjects.length];
+    });
+  });
+  return sched;
+}
+
+function mkP(name,code,faculty,type){return{name,code,faculty,type}}
+
+function switchTab(group,val,btn){
+  if(group==='year')selYear=val;else selSection=val;
+  document.querySelectorAll(`#${group==='year'?'year':'section'}Tabs .tt-tab`).forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTimetable();
+}
+
+function renderTimetable(){
+  const sched=getSchedule(selYear,selSection);
+  const head=document.getElementById('ttHead');
+  const body=document.getElementById('ttBody');
+  const nonBreak=PERIODS.filter((_,i)=>PERIOD_TYPES[i]!=='break');
+
+  head.innerHTML=`<tr><th class="day-col">Day</th>${PERIODS.map((p,i)=>
+    PERIOD_TYPES[i]==='break'?`<th style="background:rgba(100,116,139,.06);color:var(--muted);font-size:.62rem">${p}<br/>Break</th>`:
+    `<th>${p}</th>`).join('')}</tr>`;
+
+  body.innerHTML=DAYS.map(day=>{
+    const isToday=day===TODAY;
+    const periods=sched[day]||PERIODS.map(()=>null);
+    const cells=periods.map((p,i)=>{
+      if(PERIOD_TYPES[i]==='break'){return`<td style="background:rgba(100,116,139,.05)"><span class="period-cell pc-break">Break</span></td>`;}
+      if(!p||!p.name){return`<td><span class="pc-empty">–</span></td>`;}
+      return`<td><div class="period-cell pc-${p.type||'ai'}">${p.name}<span class="sub-code">${p.code}</span><span class="faculty-name">${p.faculty}</span></div></td>`;
+    }).join('');
+    return`<tr class="${isToday?'today-row':''}"><td class="day-label">${day}${isToday?'<span class="today-chip">TODAY</span>':''}</td>${cells}</tr>`;
+  }).join('');
+}
+
+renderTimetable();
+</script>
+</body>
+</html>

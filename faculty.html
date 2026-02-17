@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Faculty – DSU AI&amp;ML Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .page-content{position:relative;z-index:1;padding:0 2rem 5rem}
+    .hod-card{background:var(--card);border:1px solid var(--border2);border-radius:var(--r2);
+      padding:2.5rem;display:flex;gap:2rem;align-items:center;margin-bottom:3rem;
+      box-shadow:0 0 50px rgba(56,189,248,.07);animation:fadeUp .6s ease both}
+    .hod-avatar{width:100px;height:100px;border-radius:50%;flex-shrink:0;
+      background:var(--grad);display:flex;align-items:center;justify-content:center;
+      font-family:var(--ff-d);font-size:2.2rem;font-weight:800;color:var(--white);
+      box-shadow:0 0 30px rgba(56,189,248,.4)}
+    .hod-info h2{font-family:var(--ff-d);font-size:1.6rem;font-weight:800;color:var(--white);margin-bottom:.3rem}
+    .hod-info .desig{font-size:.85rem;color:var(--acc);font-weight:600;margin-bottom:.5rem}
+    .hod-info .qual{font-size:.85rem;color:var(--muted);margin-bottom:.8rem}
+    .hod-info .hod-tag{display:inline-block;padding:.3rem .9rem;background:var(--grad);
+      color:var(--white);border-radius:100px;font-size:.72rem;font-weight:700;letter-spacing:.05em;margin-bottom:.8rem}
+    .hod-subjects{display:flex;gap:.5rem;flex-wrap:wrap}
+    .sub-pill{padding:.25rem .75rem;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.18);
+      border-radius:100px;font-size:.73rem;color:var(--acc);font-weight:500}
+
+    .faculty-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.2rem}
+    .fac-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+      padding:1.6rem;transition:transform .25s,border-color .25s,box-shadow .25s;animation:fadeUp .5s ease both}
+    .fac-card:hover{transform:translateY(-5px);border-color:var(--border2);box-shadow:0 12px 40px rgba(56,189,248,.09)}
+    .fc-head{display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;
+      padding-bottom:1.1rem;border-bottom:1px solid var(--border)}
+    .fc-avatar{width:56px;height:56px;border-radius:50%;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--ff-d);font-size:1.2rem;font-weight:800;color:var(--white)}
+    .fc-avatar.c0{background:linear-gradient(135deg,#38bdf8,#818cf8)}
+    .fc-avatar.c1{background:linear-gradient(135deg,#34d399,#38bdf8)}
+    .fc-avatar.c2{background:linear-gradient(135deg,#818cf8,#f472b6)}
+    .fc-avatar.c3{background:linear-gradient(135deg,#fbbf24,#fb923c)}
+    .fc-avatar.c4{background:linear-gradient(135deg,#f472b6,#818cf8)}
+    .fc-name{font-family:var(--ff-d);font-size:1rem;font-weight:700;color:var(--white);margin-bottom:.25rem}
+    .fc-desig{font-size:.76rem;color:var(--acc);font-weight:600}
+    .fc-details{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.1rem}
+    .fc-row{display:flex;gap:.5rem;align-items:flex-start;font-size:.82rem}
+    .fc-row-label{color:var(--muted);font-weight:600;min-width:80px;flex-shrink:0}
+    .fc-row-val{color:var(--text)}
+    .fc-subjects{display:flex;flex-wrap:wrap;gap:.4rem}
+    .skeleton{background:linear-gradient(90deg,var(--card) 25%,var(--card2) 50%,var(--card) 75%);
+      background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:var(--r);height:220px}
+    @media(max-width:700px){.hod-card{flex-direction:column;text-align:center}.hod-subjects{justify-content:center}}
+  </style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <a href="index.html" class="nav-brand">
+    <div class="logo-orb"></div>
+    <div><span class="nav-dept">AI &amp; ML Department</span><span class="nav-uni">Dhanalakshmi Srinivasan University</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li><li><a href="students.html">Students</a></li>
+    <li><a href="faculty.html">Faculty</a></li><li><a href="timetable.html">Timetable</a></li>
+    <li><a href="gallery.html">Gallery</a></li><li><a href="admin.html" class="nav-admin">⚙ Admin</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-header">
+  <div class="section-label">// Our Educators</div>
+  <h1 class="section-title">Meet the <span class="grad-text">Faculty</span></h1>
+  <p class="section-sub" style="margin:0 auto">Expert educators and researchers shaping the next generation of AI engineers.</p>
+</div>
+
+<div class="page-content">
+  <div class="container">
+    <div id="hodSection"></div>
+    <div class="section-label" style="margin-bottom:1rem">// Teaching Staff</div>
+    <div class="faculty-grid" id="facultyGrid">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+    <div class="empty-state" id="emptyState" style="display:none">
+      <div class="es-icon">👩‍🏫</div><p>Faculty data not available. Please check the server connection.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="logo-orb sm"></div>
+      <div><span class="fb-name">DSU · AI &amp; ML Department</span><span class="fb-addr">Samayapuram, Tiruchirappalli – 621 112</span></div>
+    </div>
+    <div class="footer-links"><a href="index.html">Home</a><a href="students.html">Students</a><a href="timetable.html">Timetable</a></div>
+    <p class="footer-copy">© 2025 Dhanalakshmi Srinivasan University. All rights reserved.</p>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+<script src="shared.js"></script>
+<script>
+const COLORS=['c0','c1','c2','c3','c4'];
+
+async function loadFaculty(){
+  try{
+    const d=await apiFetch('/faculty');
+    const grid=document.getElementById('facultyGrid');
+    grid.innerHTML='';
+    if(!d.success||!d.faculty.length){document.getElementById('emptyState').style.display='block';return;}
+    const hod=d.faculty.find(f=>(f.designation||'').toLowerCase().includes('hod')||f.is_hod);
+    const rest=d.faculty.filter(f=>f!==hod);
+    if(hod){
+      document.getElementById('hodSection').innerHTML=renderHOD(hod);
+    }
+    grid.innerHTML=rest.map((f,i)=>renderFacCard(f,i)).join('');
+  }catch{
+    document.getElementById('facultyGrid').innerHTML='<div class="err-box" style="grid-column:1/-1"><span>⚠️</span><p>Cannot connect to server.</p></div>';
+  }
+}
+
+function renderHOD(f){
+  const init=getInitials(f.name);
+  const subs=(f.subjects||'').split(',').filter(Boolean).map(s=>`<span class="sub-pill">${s.trim()}</span>`).join('');
+  return `<div class="hod-card">
+    <div class="hod-avatar">${init}</div>
+    <div class="hod-info">
+      <div class="hod-tag">Head of Department</div>
+      <h2>${f.name}</h2>
+      <div class="desig">${f.designation||''}</div>
+      <div class="qual">${f.qualification||''} · ${f.experience||0} Years Experience</div>
+      ${f.email?`<div style="font-size:.82rem;color:var(--muted);margin-bottom:.6rem">📧 ${f.email}</div>`:''}
+      <div class="hod-subjects">${subs}</div>
+    </div>
+  </div>`;
+}
+
+function renderFacCard(f,i){
+  const init=getInitials(f.name);
+  const col=COLORS[i%COLORS.length];
+  const subs=(f.subjects||'').split(',').filter(Boolean).map(s=>`<span class="sub-pill">${s.trim()}</span>`).join('');
+  return `<div class="fac-card">
+    <div class="fc-head">
+      <div class="fc-avatar ${col}">${init}</div>
+      <div><div class="fc-name">${f.name}</div><div class="fc-desig">${f.designation||'Faculty'}</div></div>
+    </div>
+    <div class="fc-details">
+      <div class="fc-row"><span class="fc-row-label">Qualification</span><span class="fc-row-val">${f.qualification||'–'}</span></div>
+      <div class="fc-row"><span class="fc-row-label">Experience</span><span class="fc-row-val">${f.experience||0} Years</span></div>
+      ${f.email?`<div class="fc-row"><span class="fc-row-label">Email</span><span class="fc-row-val" style="word-break:break-all">${f.email}</span></div>`:''}
+      ${f.phone?`<div class="fc-row"><span class="fc-row-label">Phone</span><span class="fc-row-val">${f.phone}</span></div>`:''}
+    </div>
+    ${subs?`<div class="fc-subjects">${subs}</div>`:''}
+  </div>`;
+}
+
+function getInitials(name){return(name||'?').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}
+
+loadFaculty();
+</script>
+</body>
+</html>

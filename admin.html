@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin – DSU AI&amp;ML Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    /* LOGIN */
+    .login-wrap{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;
+      justify-content:center;padding:2rem}
+    .login-card{background:var(--card);border:1px solid var(--border2);border-radius:var(--r2);
+      padding:2.5rem;width:100%;max-width:420px;box-shadow:0 0 60px rgba(56,189,248,.08);
+      animation:fadeUp .6s ease both}
+    .login-logo{display:flex;align-items:center;gap:.8rem;margin-bottom:2rem}
+    .login-logo .logo-orb{width:42px;height:42px}
+    .login-logo-text h2{font-family:var(--ff-d);font-size:1.1rem;font-weight:700;color:var(--white);line-height:1.2}
+    .login-logo-text p{font-size:.72rem;color:var(--muted)}
+    .login-title{font-family:var(--ff-d);font-size:1.5rem;font-weight:800;color:var(--white);margin-bottom:.3rem}
+    .login-sub{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+    .login-form{display:flex;flex-direction:column;gap:1rem}
+    .pwd-wrap{position:relative}
+    .show-pwd{position:absolute;right:.9rem;top:50%;transform:translateY(-50%);
+      background:none;border:none;color:var(--muted);cursor:pointer;font-size:.95rem}
+    .login-btn{width:100%;padding:.85rem;background:var(--grad);color:var(--white);
+      border:none;border-radius:10px;font-family:var(--ff-d);font-size:.95rem;font-weight:700;
+      cursor:pointer;transition:transform .2s,box-shadow .2s;margin-top:.3rem;
+      box-shadow:0 4px 20px rgba(56,189,248,.25)}
+    .login-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(56,189,248,.4)}
+    .login-err{color:var(--danger);font-size:.82rem;text-align:center;display:none}
+    .forgot-link{text-align:center;font-size:.82rem;color:var(--acc);cursor:pointer;
+      background:none;border:none;width:100%;padding:.3rem;transition:opacity .2s;font-family:var(--ff-b)}
+    .forgot-link:hover{opacity:.75;text-decoration:underline}
+    .login-divider{display:flex;align-items:center;gap:.8rem;margin:.2rem 0}
+    .login-divider::before,.login-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+    .login-divider span{font-size:.72rem;color:var(--muted)}
+    /* Forgot password panel */
+    .forgot-panel{display:none;animation:fadeUp .4s ease both}
+    .forgot-panel.visible{display:flex;flex-direction:column;gap:1rem}
+    .back-btn{background:none;border:none;color:var(--muted);font-size:.85rem;cursor:pointer;
+      display:flex;align-items:center;gap:.4rem;padding:0;margin-bottom:.5rem;transition:color .2s;font-family:var(--ff-b)}
+    .back-btn:hover{color:var(--acc)}
+    .success-box{background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.2);
+      border-radius:10px;padding:1rem 1.2rem;font-size:.85rem;color:var(--acc3);display:none;text-align:center}
+
+    /* ADMIN PANEL */
+    .admin-panel{display:none;min-height:100vh;padding-top:var(--nav)}
+    .admin-layout{display:flex;min-height:calc(100vh - var(--nav))}
+    .sidebar{width:220px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);
+      padding:1.5rem 1rem;position:sticky;top:var(--nav);height:calc(100vh - var(--nav));overflow-y:auto}
+    .sidebar-label{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;
+      font-weight:700;padding:.5rem .5rem .3rem;font-family:var(--ff-d)}
+    .sidebar-link{display:flex;align-items:center;gap:.7rem;padding:.6rem .75rem;border-radius:8px;
+      color:var(--muted);font-size:.85rem;font-weight:500;cursor:pointer;transition:all .2s;border:none;
+      background:none;width:100%;text-align:left;margin-bottom:.1rem}
+    .sidebar-link:hover{background:rgba(56,189,248,.07);color:var(--text)}
+    .sidebar-link.active{background:rgba(56,189,248,.12);color:var(--acc);font-weight:700}
+    .sidebar-icon{font-size:1rem;width:20px;text-align:center}
+    .sidebar-logout{margin-top:auto;border-top:1px solid var(--border);padding-top:1rem}
+
+    .admin-content{flex:1;padding:2rem;overflow-x:auto;position:relative;z-index:1}
+    .admin-section{display:none;animation:fadeUp .4s ease both}
+    .admin-section.active{display:block}
+
+    /* Dashboard Cards */
+    .dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:2rem}
+    .dash-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem;
+      transition:border-color .2s,box-shadow .2s}
+    .dash-card:hover{border-color:var(--border2);box-shadow:var(--shadow)}
+    .dc-num{font-family:var(--ff-d);font-size:2rem;font-weight:800;background:var(--grad);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+    .dc-lbl{font-size:.75rem;color:var(--muted);margin-top:.3rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+    .dc-icon{font-size:1.5rem;margin-bottom:.6rem}
+
+    /* Section headers */
+    .sec-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
+      gap:.75rem;margin-bottom:1.5rem}
+    .sec-head h2{font-family:var(--ff-d);font-size:1.2rem;font-weight:700;color:var(--white)}
+
+    /* Responsive */
+    @media(max-width:768px){.admin-layout{flex-direction:column}
+      .sidebar{width:100%;height:auto;position:static;display:flex;flex-wrap:wrap;gap:.3rem;padding:1rem}
+      .admin-content{padding:1rem}}
+  </style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+
+<!-- NAV (always visible) -->
+<nav class="navbar">
+  <a href="index.html" class="nav-brand">
+    <div class="logo-orb"></div>
+    <div><span class="nav-dept">AI &amp; ML Department</span><span class="nav-uni">Dhanalakshmi Srinivasan University</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li><li><a href="students.html">Students</a></li>
+    <li><a href="faculty.html">Faculty</a></li><li><a href="timetable.html">Timetable</a></li>
+    <li><a href="gallery.html">Gallery</a></li><li><a href="admin.html" class="nav-admin">⚙ Admin</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- LOGIN SCREEN -->
+<div class="login-wrap" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-orb"></div>
+      <div class="login-logo-text"><h2>DSU · AI&ML Portal</h2><p>Admin Access</p></div>
+    </div>
+    <h2 class="login-title">Sign In</h2>
+    <p class="login-sub">Enter your admin credentials to manage the department portal.</p>
+    <!-- SIGN IN FORM -->
+    <div id="signinForm">
+      <div class="login-form">
+        <div class="form-group"><label class="form-label">Username</label>
+          <input type="text" class="form-input" id="loginUser" placeholder="Enter your username" autocomplete="username"/></div>
+        <div class="form-group"><label class="form-label">Password</label>
+          <div class="pwd-wrap">
+            <input type="password" class="form-input" id="loginPwd" placeholder="Enter your password" style="padding-right:2.8rem" autocomplete="current-password"/>
+            <button class="show-pwd" type="button" onclick="togglePwd()">👁</button>
+          </div>
+        </div>
+        <p class="login-err" id="loginErr">Invalid credentials. Please try again.</p>
+        <button class="login-btn" onclick="doLogin()">Sign In →</button>
+        <div class="login-divider"><span>or</span></div>
+        <button class="forgot-link" onclick="showForgot()">Forgot password?</button>
+      </div>
+    </div>
+
+    <!-- FORGOT PASSWORD PANEL -->
+    <div id="forgotForm" class="forgot-panel">
+      <button class="back-btn" onclick="showSignin()">← Back to Sign In</button>
+      <h2 class="login-title" style="font-size:1.3rem">Reset Password</h2>
+      <p class="login-sub" style="margin-bottom:1.2rem">Enter your registered email address and we'll send you a password reset link.</p>
+      <div class="login-form">
+        <div class="form-group"><label class="form-label">Email Address</label>
+          <input type="email" class="form-input" id="resetEmail" placeholder="your@email.com"/></div>
+        <p class="login-err" id="resetErr">Please enter a valid email address.</p>
+        <div class="success-box" id="resetSuccess">
+          ✅ Reset link sent! Check your email inbox and follow the instructions.
+        </div>
+        <button class="login-btn" onclick="sendReset()">Send Reset Link →</button>
+        <button class="forgot-link" onclick="showSignin()">← Return to Sign In</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-label">Dashboard</div>
+      <button class="sidebar-link active" onclick="showSection('dashboard',this)"><span class="sidebar-icon">📊</span>Overview</button>
+      <div class="sidebar-label" style="margin-top:.8rem">Manage</div>
+      <button class="sidebar-link" onclick="showSection('students',this)"><span class="sidebar-icon">👨‍🎓</span>Students</button>
+      <button class="sidebar-link" onclick="showSection('faculty',this)"><span class="sidebar-icon">👩‍🏫</span>Faculty</button>
+      <div class="sidebar-label" style="margin-top:.8rem">Settings</div>
+      <button class="sidebar-link" onclick="showSection('lookup',this)"><span class="sidebar-icon">🔍</span>Quick Lookup</button>
+      <div class="sidebar-logout">
+        <button class="sidebar-link" onclick="doLogout()" style="color:var(--danger)"><span class="sidebar-icon">🚪</span>Sign Out</button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-content">
+
+      <!-- DASHBOARD -->
+      <div class="admin-section active" id="sec-dashboard">
+        <div class="sec-head"><h2>📊 Overview</h2><span class="badge badge-green">● Live</span></div>
+        <div class="dash-grid">
+          <div class="dash-card"><div class="dc-icon">👨‍🎓</div><div class="dc-num" id="dc-total">–</div><div class="dc-lbl">Total Students</div></div>
+          <div class="dash-card"><div class="dc-icon">✅</div><div class="dc-num" id="dc-active">–</div><div class="dc-lbl">Active Students</div></div>
+          <div class="dash-card"><div class="dc-icon">📈</div><div class="dc-num" id="dc-cgpa">–</div><div class="dc-lbl">Avg CGPA</div></div>
+          <div class="dash-card"><div class="dc-icon">📅</div><div class="dc-num" id="dc-att">–</div><div class="dc-lbl">Avg Attendance %</div></div>
+        </div>
+        <div style="color:var(--muted);font-size:.88rem;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem">
+          <p style="margin-bottom:.5rem;color:var(--white);font-weight:600">🚀 Quick Actions</p>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem">
+            <button class="btn-primary btn-sm" onclick="showSection('students',document.querySelector('[onclick*=students]'))">+ Add Student</button>
+            <button class="btn-primary btn-sm" onclick="showSection('faculty',document.querySelector('[onclick*=faculty]'))">+ Add Faculty</button>
+            <a href="students.html" class="btn-ghost btn-sm">View Student Directory</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- STUDENTS -->
+      <div class="admin-section" id="sec-students">
+        <div class="sec-head">
+          <h2>👨‍🎓 Students</h2>
+          <button class="btn-primary btn-sm" onclick="openStudentModal()">+ Add Student</button>
+        </div>
+        <div class="search-bar" style="margin-bottom:1.2rem">
+          <div class="search-input-wrap"><span class="search-ico">🔍</span>
+            <input class="search-input" id="adminStuSearch" placeholder="Search name or reg no…" oninput="adminFilterStudents()"/>
+          </div>
+          <select class="filter-select" id="adminStuYear" onchange="adminFilterStudents()">
+            <option value="">All Years</option>
+            <option>I</option><option>II</option><option>III</option><option>IV</option>
+          </select>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead><tr>
+            <th>Reg No</th><th>Name</th><th>Year</th><th>Sec</th><th>CGPA</th><th>Attendance</th><th>Status</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="adminStuTable"></tbody></table>
+        </div>
+        <p style="font-size:.78rem;color:var(--muted);margin-top:.8rem" id="adminStuCount"></p>
+      </div>
+
+      <!-- FACULTY -->
+      <div class="admin-section" id="sec-faculty">
+        <div class="sec-head">
+          <h2>👩‍🏫 Faculty</h2>
+          <button class="btn-primary btn-sm" onclick="openFacModal()">+ Add Faculty</button>
+        </div>
+        <div class="tbl-wrap">
+          <table><thead><tr>
+            <th>Name</th><th>Designation</th><th>Qualification</th><th>Experience</th><th>Email</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="adminFacTable"></tbody></table>
+        </div>
+      </div>
+
+      <!-- QUICK LOOKUP -->
+      <div class="admin-section" id="sec-lookup">
+        <div class="sec-head"><h2>🔍 Quick Lookup</h2></div>
+        <div class="lookup-box" style="max-width:500px;margin:0 0 1rem">
+          <div class="input-wrap"><span class="input-ico">🎓</span>
+            <input type="text" id="adminRegInput" class="reg-input" placeholder="Enter Reg No…" maxlength="15"/>
+          </div>
+          <button class="btn-primary" onclick="adminLookup()">Search</button>
+        </div>
+        <div id="adminLookupResult"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- STUDENT MODAL -->
+<div class="modal-overlay" id="stuModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="stuModalTitle">Add Student</h3><button class="modal-close" onclick="closeModal('stuModal')">✕</button></div>
+    <div class="form-grid">
+      <div class="form-group"><label class="form-label">Reg No *</label><input class="form-input" id="sm-reg" placeholder="2122AIML001"/></div>
+      <div class="form-group"><label class="form-label">Full Name *</label><input class="form-input" id="sm-name" placeholder="Student Name"/></div>
+      <div class="form-group"><label class="form-label">Year</label>
+        <select class="form-select" id="sm-year"><option value="">–</option><option>I</option><option>II</option><option>III</option><option>IV</option></select></div>
+      <div class="form-group"><label class="form-label">Semester</label>
+        <select class="form-select" id="sm-sem"><option value="">–</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option></select></div>
+      <div class="form-group"><label class="form-label">Section</label>
+        <select class="form-select" id="sm-sec"><option value="">–</option><option>A</option><option>B</option></select></div>
+      <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" class="form-input" id="sm-dob"/></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="sm-email" type="email" placeholder="student@dsu.edu.in"/></div>
+      <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="sm-phone" placeholder="9876543210"/></div>
+      <div class="form-group"><label class="form-label">Blood Group</label>
+        <select class="form-select" id="sm-blood"><option value="">–</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></div>
+      <div class="form-group"><label class="form-label">CGPA</label><input class="form-input" id="sm-cgpa" type="number" step="0.01" min="0" max="10" placeholder="8.5"/></div>
+      <div class="form-group"><label class="form-label">Attendance %</label><input class="form-input" id="sm-att" type="number" min="0" max="100" placeholder="85"/></div>
+      <div class="form-group"><label class="form-label">Mentor</label><input class="form-input" id="sm-mentor" placeholder="Dr. Name"/></div>
+      <div class="form-group"><label class="form-label">Status</label>
+        <select class="form-select" id="sm-status"><option value="Active">Active</option><option value="Inactive">Inactive</option></select></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost btn-sm" onclick="closeModal('stuModal')">Cancel</button>
+      <button class="btn-primary btn-sm" onclick="saveStudent()" id="stuSaveBtn">Save Student</button>
+    </div>
+  </div>
+</div>
+
+<!-- FACULTY MODAL -->
+<div class="modal-overlay" id="facModal">
+  <div class="modal">
+    <div class="modal-head"><h3 id="facModalTitle">Add Faculty</h3><button class="modal-close" onclick="closeModal('facModal')">✕</button></div>
+    <div class="form-grid">
+      <div class="form-group full"><label class="form-label">Full Name *</label><input class="form-input" id="fm-name" placeholder="Dr. / Prof. Name"/></div>
+      <div class="form-group"><label class="form-label">Designation</label>
+        <select class="form-select" id="fm-desig">
+          <option>Professor</option><option>Associate Professor</option><option>Assistant Professor</option>
+          <option>HOD &amp; Professor</option><option>HOD &amp; Associate Professor</option>
+        </select></div>
+      <div class="form-group"><label class="form-label">Qualification</label><input class="form-input" id="fm-qual" placeholder="Ph.D, M.E., B.E."/></div>
+      <div class="form-group"><label class="form-label">Experience (Years)</label><input class="form-input" id="fm-exp" type="number" min="0" placeholder="10"/></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="fm-email" type="email" placeholder="faculty@dsu.edu.in"/></div>
+      <div class="form-group"><label class="form-label">Phone</label><input class="form-input" id="fm-phone" placeholder="9876543210"/></div>
+      <div class="form-group full"><label class="form-label">Subjects Handled (comma separated)</label>
+        <input class="form-input" id="fm-subjects" placeholder="Deep Learning, NLP, Machine Learning"/></div>
+      <div class="form-group"><label class="form-label">Is HOD?</label>
+        <select class="form-select" id="fm-hod"><option value="0">No</option><option value="1">Yes</option></select></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-ghost btn-sm" onclick="closeModal('facModal')">Cancel</button>
+      <button class="btn-primary btn-sm" onclick="saveFaculty()">Save Faculty</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="shared.js"></script>
+<script>
+/* ── AUTH ─────────────────────────────────────── */
+const ADMIN_USER='admin', ADMIN_PASS='aiml@dsu2025';
+let isLoggedIn=sessionStorage.getItem('dsu_admin')==='1';
+let editStuReg=null, editFacId=null;
+let allAdminStudents=[];
+
+function init(){
+  if(isLoggedIn){showPanel();}
+  document.getElementById('loginPwd').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+  document.getElementById('resetEmail')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendReset()});
+}
+
+/* ── FORGOT PASSWORD ──────────────────────────── */
+function showForgot(){
+  document.getElementById('signinForm').style.display='none';
+  document.getElementById('forgotForm').classList.add('visible');
+  document.getElementById('resetEmail').focus();
+  document.getElementById('resetErr').style.display='none';
+  document.getElementById('resetSuccess').style.display='none';
+}
+
+function showSignin(){
+  document.getElementById('forgotForm').classList.remove('visible');
+  document.getElementById('signinForm').style.display='block';
+  document.getElementById('loginErr').style.display='none';
+}
+
+function sendReset(){
+  const email=document.getElementById('resetEmail').value.trim();
+  const err=document.getElementById('resetErr');
+  const ok=document.getElementById('resetSuccess');
+  if(!email||!email.includes('@')){err.style.display='block';ok.style.display='none';return;}
+  err.style.display='none';
+  // In production this would call your backend email API
+  // For now simulate sending
+  ok.style.display='block';
+  ok.textContent=`✅ Reset link sent to ${email}! Check your inbox.`;
+  document.getElementById('resetEmail').value='';
+  setTimeout(()=>{ok.style.display='none';showSignin();},4000);
+}
+
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPwd').value;
+  const err=document.getElementById('loginErr');
+  if(u===ADMIN_USER&&p===ADMIN_PASS){
+    sessionStorage.setItem('dsu_admin','1');isLoggedIn=true;err.style.display='none';showPanel();
+  }else{err.style.display='block';}
+}
+
+function doLogout(){
+  sessionStorage.removeItem('dsu_admin');isLoggedIn=false;
+  document.getElementById('adminPanel').style.display='none';
+  document.getElementById('loginScreen').style.display='flex';
+}
+
+function togglePwd(){
+  const f=document.getElementById('loginPwd');
+  f.type=f.type==='password'?'text':'password';
+}
+
+function showPanel(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('adminPanel').style.display='block';
+  loadDashboard();loadAdminStudents();loadAdminFaculty();
+}
+
+/* ── SECTIONS ─────────────────────────────────── */
+function showSection(id,btn){
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  document.querySelectorAll('.sidebar-link').forEach(b=>b.classList.remove('active'));
+  btn?.classList.add('active');
+}
+
+/* ── DASHBOARD ────────────────────────────────── */
+async function loadDashboard(){
+  try{const d=await apiFetch('/stats');if(d.success){
+    document.getElementById('dc-total').textContent=d.stats.total;
+    document.getElementById('dc-active').textContent=d.stats.active;
+    document.getElementById('dc-cgpa').textContent=d.stats.avgCgpa||'–';
+    document.getElementById('dc-att').textContent=(d.stats.avgAttendance||0)+'%';
+  }}catch{}
+}
+
+/* ── STUDENTS ─────────────────────────────────── */
+async function loadAdminStudents(){
+  try{
+    const d=await apiFetch('/students');
+    if(d.success){allAdminStudents=d.students;renderAdminStudents(allAdminStudents);}
+  }catch{document.getElementById('adminStuTable').innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--muted)">Server not connected.</td></tr>';}
+}
+
+function adminFilterStudents(){
+  const q=document.getElementById('adminStuSearch').value.toLowerCase();
+  const yr=document.getElementById('adminStuYear').value;
+  const filtered=allAdminStudents.filter(s=>{
+    const mq=!q||(s.name||'').toLowerCase().includes(q)||(s.reg_no||'').toLowerCase().includes(q);
+    const my=!yr||(s.year||'')===yr;
+    return mq&&my;
+  });
+  renderAdminStudents(filtered);
+}
+
+function renderAdminStudents(list){
+  document.getElementById('adminStuCount').textContent=`Showing ${list.length} students`;
+  document.getElementById('adminStuTable').innerHTML=list.map(s=>{
+    const active=(s.status||'').toLowerCase()==='active';
+    return`<tr>
+      <td class="td-reg">${s.reg_no}</td>
+      <td class="td-name">${s.name}</td>
+      <td>${s.year||'–'}</td><td>${s.section||'–'}</td>
+      <td>${s.cgpa||'–'}</td><td>${s.attendance||0}%</td>
+      <td><span class="badge ${active?'badge-green':'badge-red'}">${active?'Active':'Inactive'}</span></td>
+      <td><div class="td-actions">
+        <button class="btn-ghost btn-sm" onclick="editStudent('${s.reg_no}')">✏️</button>
+        <button class="btn-danger btn-primary btn-sm" onclick="deleteStudent('${s.reg_no}','${s.name}')">🗑️</button>
+      </div></td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:2rem">No students found.</td></tr>';
+}
+
+function openStudentModal(data){
+  editStuReg=data?data.reg_no:null;
+  document.getElementById('stuModalTitle').textContent=data?'Edit Student':'Add Student';
+  const f=id=>document.getElementById(id);
+  f('sm-reg').value=data?.reg_no||'';f('sm-reg').disabled=!!data;
+  f('sm-name').value=data?.name||'';f('sm-year').value=data?.year||'';
+  f('sm-sem').value=data?.semester||'';f('sm-sec').value=data?.section||'';
+  f('sm-dob').value=data?.dob||'';f('sm-email').value=data?.email||'';
+  f('sm-phone').value=data?.phone||'';f('sm-blood').value=data?.blood_group||'';
+  f('sm-cgpa').value=data?.cgpa||'';f('sm-att').value=data?.attendance||'';
+  f('sm-mentor').value=data?.mentor||'';f('sm-status').value=data?.status||'Active';
+  document.getElementById('stuModal').classList.add('open');
+}
+
+async function editStudent(reg){
+  try{const d=await apiFetch(`/student/${reg}`);if(d.success)openStudentModal(d.student);}
+  catch{showToast('Could not load student data','error');}
+}
+
+async function saveStudent(){
+  const f=id=>document.getElementById(id).value;
+  const reg=f('sm-reg').trim().toUpperCase();
+  const name=f('sm-name').trim();
+  if(!reg||!name){showToast('Reg No and Name are required','error');return;}
+  const body={reg_no:reg,name,year:f('sm-year'),semester:+f('sm-sem')||null,section:f('sm-sec'),
+    dob:f('sm-dob'),email:f('sm-email'),phone:f('sm-phone'),blood_group:f('sm-blood'),
+    cgpa:+f('sm-cgpa')||0,attendance:+f('sm-att')||0,mentor:f('sm-mentor'),status:f('sm-status')};
+  try{
+    const method=editStuReg?'PUT':'POST';
+    const url=editStuReg?`/students/${editStuReg}`:'/students';
+    const d=await apiFetch(url,{method,body:JSON.stringify(body)});
+    if(d.success){showToast(editStuReg?'Student updated!':'Student added!','success');
+      closeModal('stuModal');loadAdminStudents();loadDashboard();}
+    else showToast(d.message||'Error saving student','error');
+  }catch{showToast('Server error','error');}
+}
+
+async function deleteStudent(reg,name){
+  if(!confirm(`Delete student ${name} (${reg})? This cannot be undone.`))return;
+  try{const d=await apiFetch(`/students/${reg}`,{method:'DELETE'});
+    if(d.success){showToast('Student deleted','warn');loadAdminStudents();loadDashboard();}
+    else showToast(d.message||'Error','error');
+  }catch{showToast('Server error','error');}
+}
+
+/* ── FACULTY ──────────────────────────────────── */
+async function loadAdminFaculty(){
+  try{const d=await apiFetch('/faculty');
+    if(d.success)renderAdminFaculty(d.faculty);
+  }catch{}
+}
+
+function renderAdminFaculty(list){
+  document.getElementById('adminFacTable').innerHTML=list.map(f=>`<tr>
+    <td class="td-name">${f.name}</td>
+    <td>${f.designation||'–'}</td><td>${f.qualification||'–'}</td>
+    <td>${f.experience||0} yrs</td><td>${f.email||'–'}</td>
+    <td><div class="td-actions">
+      <button class="btn-ghost btn-sm" onclick="editFaculty(${f.id})">✏️</button>
+      <button class="btn-danger btn-primary btn-sm" onclick="deleteFaculty(${f.id},'${f.name}')">🗑️</button>
+    </div></td>
+  </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:2rem">No faculty records. Add one above.</td></tr>';
+}
+
+function openFacModal(data){
+  editFacId=data?.id||null;
+  document.getElementById('facModalTitle').textContent=data?'Edit Faculty':'Add Faculty';
+  const f=id=>document.getElementById(id);
+  f('fm-name').value=data?.name||'';f('fm-desig').value=data?.designation||'Assistant Professor';
+  f('fm-qual').value=data?.qualification||'';f('fm-exp').value=data?.experience||'';
+  f('fm-email').value=data?.email||'';f('fm-phone').value=data?.phone||'';
+  f('fm-subjects').value=data?.subjects||'';f('fm-hod').value=data?.is_hod||'0';
+  document.getElementById('facModal').classList.add('open');
+}
+
+async function editFaculty(id){
+  try{const d=await apiFetch(`/faculty/${id}`);if(d.success)openFacModal(d.faculty);}
+  catch{showToast('Could not load faculty data','error');}
+}
+
+async function saveFaculty(){
+  const f=id=>document.getElementById(id).value;
+  const name=f('fm-name').trim();
+  if(!name){showToast('Name is required','error');return;}
+  const body={name,designation:f('fm-desig'),qualification:f('fm-qual'),
+    experience:+f('fm-exp')||0,email:f('fm-email'),phone:f('fm-phone'),
+    subjects:f('fm-subjects'),is_hod:+f('fm-hod')};
+  try{
+    const method=editFacId?'PUT':'POST';
+    const url=editFacId?`/faculty/${editFacId}`:'/faculty';
+    const d=await apiFetch(url,{method,body:JSON.stringify(body)});
+    if(d.success){showToast(editFacId?'Faculty updated!':'Faculty added!','success');
+      closeModal('facModal');loadAdminFaculty();}
+    else showToast(d.message||'Error','error');
+  }catch{showToast('Server error','error');}
+}
+
+async function deleteFaculty(id,name){
+  if(!confirm(`Delete ${name}?`))return;
+  try{const d=await apiFetch(`/faculty/${id}`,{method:'DELETE'});
+    if(d.success){showToast('Faculty deleted','warn');loadAdminFaculty();}
+    else showToast(d.message||'Error','error');
+  }catch{showToast('Server error','error');}
+}
+
+/* ── QUICK LOOKUP ─────────────────────────────── */
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('adminRegInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')adminLookup()});
+});
+
+async function adminLookup(){
+  const reg=document.getElementById('adminRegInput').value.trim().toUpperCase();
+  const area=document.getElementById('adminLookupResult');
+  area.innerHTML='';
+  if(!reg)return;
+  try{const d=await apiFetch(`/student/${reg}`);
+    if(d.success)renderStudentCard(d.student,area);
+    else area.innerHTML=`<div class="err-box"><span>⚠️</span><p>${d.message}</p></div>`;
+  }catch{area.innerHTML=`<div class="err-box"><span>⚠️</span><p>Server error.</p></div>`;}
+}
+
+/* ── MODAL HELPERS ────────────────────────────── */
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.modal-overlay').forEach(m=>{
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');});
+});
+
+init();
+</script>
+</body>
+</html>

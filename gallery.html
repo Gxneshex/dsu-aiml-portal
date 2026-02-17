@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gallery – DSU AI&amp;ML Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .page-content{position:relative;z-index:1;padding:0 2rem 5rem}
+    .cat-tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2rem}
+    .cat-tab{padding:.48rem 1.2rem;border-radius:100px;border:1px solid var(--border);
+      background:transparent;color:var(--muted);font-size:.82rem;font-weight:600;
+      cursor:pointer;transition:all .2s;font-family:var(--ff-d)}
+    .cat-tab.active{background:var(--grad);color:var(--white);border-color:transparent;box-shadow:0 4px 16px rgba(56,189,248,.25)}
+    .cat-tab:hover:not(.active){border-color:var(--border2);color:var(--text)}
+
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.1rem}
+    .gal-item{border-radius:var(--r);overflow:hidden;cursor:pointer;position:relative;
+      aspect-ratio:4/3;background:var(--card);border:1px solid var(--border);
+      transition:transform .3s,box-shadow .3s}
+    .gal-item:hover{transform:scale(1.03);box-shadow:0 12px 40px rgba(0,0,0,.4);z-index:2}
+    .gal-item:hover .gal-overlay{opacity:1}
+    .gal-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+      font-size:4rem;background:var(--card2);transition:transform .3s}
+    .gal-item:hover .gal-bg{transform:scale(1.08)}
+    .gal-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,12,24,.9) 0%,transparent 60%);
+      opacity:0;transition:opacity .3s;display:flex;align-items:flex-end;padding:1.2rem}
+    .gal-info h4{font-family:var(--ff-d);font-size:.9rem;font-weight:700;color:var(--white);margin-bottom:.2rem}
+    .gal-info p{font-size:.75rem;color:rgba(255,255,255,.65)}
+    .gal-cat-badge{position:absolute;top:.75rem;right:.75rem;padding:.22rem .65rem;
+      border-radius:100px;font-size:.65rem;font-weight:700;backdrop-filter:blur(8px)}
+
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;background:rgba(4,12,24,.96);backdrop-filter:blur(12px);
+      z-index:600;display:flex;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;transition:opacity .3s;padding:1rem}
+    .lightbox.open{opacity:1;pointer-events:all}
+    .lb-inner{position:relative;max-width:800px;width:100%;
+      background:var(--card);border:1px solid var(--border2);border-radius:var(--r2);
+      overflow:hidden;transform:scale(.92);transition:transform .3s}
+    .lightbox.open .lb-inner{transform:scale(1)}
+    .lb-img{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;
+      font-size:6rem;background:var(--card2)}
+    .lb-body{padding:1.5rem}
+    .lb-body h3{font-family:var(--ff-d);font-size:1.15rem;font-weight:700;color:var(--white);margin-bottom:.3rem}
+    .lb-body p{font-size:.88rem;color:var(--muted);margin-bottom:.8rem}
+    .lb-close{position:absolute;top:1rem;right:1rem;background:rgba(4,12,24,.7);border:1px solid var(--border);
+      border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;
+      color:var(--text);font-size:1.1rem;cursor:pointer;transition:all .2s;backdrop-filter:blur(8px)}
+    .lb-close:hover{background:rgba(248,113,113,.2);border-color:var(--danger);color:var(--danger)}
+    .lb-nav{display:flex;gap:.5rem;margin-top:.5rem}
+    .lb-nav-btn{flex:1;padding:.6rem;background:var(--card2);border:1px solid var(--border);
+      border-radius:8px;color:var(--text);cursor:pointer;transition:all .2s;font-size:.85rem}
+    .lb-nav-btn:hover{border-color:var(--border2);background:rgba(56,189,248,.08)}
+
+    /* Upload Section (Admin only) */
+    .upload-hint{background:rgba(56,189,248,.05);border:1px dashed var(--border2);
+      border-radius:var(--r);padding:1.5rem;text-align:center;color:var(--muted);
+      font-size:.85rem;margin-bottom:2rem}
+    .upload-hint a{color:var(--acc);font-weight:600}
+  </style>
+</head>
+<body>
+<canvas id="particles"></canvas>
+<nav class="navbar">
+  <a href="index.html" class="nav-brand">
+    <div class="logo-orb"></div>
+    <div><span class="nav-dept">AI &amp; ML Department</span><span class="nav-uni">Dhanalakshmi Srinivasan University</span></div>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html">Home</a></li><li><a href="students.html">Students</a></li>
+    <li><a href="faculty.html">Faculty</a></li><li><a href="timetable.html">Timetable</a></li>
+    <li><a href="gallery.html">Gallery</a></li><li><a href="admin.html" class="nav-admin">⚙ Admin</a></li>
+  </ul>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-header">
+  <div class="section-label">// Department Moments</div>
+  <h1 class="section-title">Photo <span class="grad-text">Gallery</span></h1>
+  <p class="section-sub" style="margin:0 auto">Capturing milestones, achievements, events and the vibrant culture of our department.</p>
+</div>
+
+<div class="page-content">
+  <div class="container">
+    <div class="upload-hint">📸 To add real photos, go to <a href="admin.html">Admin Panel → Gallery</a> and upload images. Photos appear here instantly.</div>
+
+    <div class="cat-tabs" id="catTabs">
+      <button class="cat-tab active" onclick="filterGallery('all',this)">All Events</button>
+      <button class="cat-tab" onclick="filterGallery('hackathon',this)">Hackathons</button>
+      <button class="cat-tab" onclick="filterGallery('workshop',this)">Workshops</button>
+      <button class="cat-tab" onclick="filterGallery('placement',this)">Placements</button>
+      <button class="cat-tab" onclick="filterGallery('sports',this)">Sports</button>
+      <button class="cat-tab" onclick="filterGallery('farewell',this)">Farewell</button>
+    </div>
+
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <div class="lb-inner">
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+    <div class="lb-img" id="lbImg"></div>
+    <div class="lb-body">
+      <h3 id="lbTitle"></h3>
+      <p id="lbDesc"></p>
+      <div class="lb-nav">
+        <button class="lb-nav-btn" onclick="lbNav(-1)">← Previous</button>
+        <button class="lb-nav-btn" onclick="lbNav(1)">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand"><div class="logo-orb sm"></div>
+      <div><span class="fb-name">DSU · AI &amp; ML Department</span><span class="fb-addr">Samayapuram, Tiruchirappalli – 621 112</span></div>
+    </div>
+    <div class="footer-links"><a href="index.html">Home</a><a href="students.html">Students</a><a href="faculty.html">Faculty</a></div>
+    <p class="footer-copy">© 2025 Dhanalakshmi Srinivasan University. All rights reserved.</p>
+  </div>
+</footer>
+<div class="toast" id="toast"></div>
+<script src="shared.js"></script>
+<script>
+const SAMPLE_GALLERY=[
+  {id:1,title:'National Hackathon 2024',desc:'Our team won 2nd place at the National AI Hackathon held at IIT Madras.',cat:'hackathon',icon:'🏆',date:'March 2024',color:'rgba(251,191,36,.15)'},
+  {id:2,title:'Deep Learning Workshop',desc:'Two-day intensive workshop on Deep Learning frameworks conducted by industry experts.',cat:'workshop',icon:'🧠',date:'February 2024',color:'rgba(56,189,248,.1)'},
+  {id:3,title:'TCS Campus Placement Drive',desc:'80+ students placed in TCS, Infosys, and Wipro during the annual placement drive.',cat:'placement',icon:'💼',date:'January 2024',color:'rgba(52,211,153,.1)'},
+  {id:4,title:'Sports Day 2024',desc:'Department teams competed in cricket, volleyball, and chess events.',cat:'sports',icon:'🏏',date:'December 2023',color:'rgba(244,114,182,.1)'},
+  {id:5,title:'Final Year Farewell',desc:'A grand farewell ceremony for the outgoing 2023 batch with cultural performances.',cat:'farewell',icon:'🎓',date:'April 2023',color:'rgba(129,140,248,.1)'},
+  {id:6,title:'Smart India Hackathon',desc:'Our students represented DSU at the Smart India Hackathon 2023 finals.',cat:'hackathon',icon:'🚀',date:'August 2023',color:'rgba(251,191,36,.12)'},
+  {id:7,title:'Python Bootcamp',desc:'Intensive 3-day Python and Data Science bootcamp for II year students.',cat:'workshop',icon:'🐍',date:'July 2023',color:'rgba(56,189,248,.08)'},
+  {id:8,title:'Accenture Placement',desc:'45 students successfully placed in Accenture in the off-campus drive.',cat:'placement',icon:'🎯',date:'November 2023',color:'rgba(52,211,153,.08)'},
+  {id:9,title:'Annual Sports Meet',desc:'Interdepartmental sports tournament. AIML won overall championship.',cat:'sports',icon:'🥇',date:'January 2023',color:'rgba(244,114,182,.08)'},
+  {id:10,title:'Guest Lecture – ML in Healthcare',desc:'Distinguished lecture by Dr. Ravi Kumar from AIIMS on AI applications in medicine.',cat:'workshop',icon:'🏥',date:'October 2023',color:'rgba(129,140,248,.08)'},
+  {id:11,title:'Code Fusion Hackathon',desc:'24-hour internal hackathon with 60 teams competing on real-world AI problems.',cat:'hackathon',icon:'💡',date:'September 2023',color:'rgba(251,191,36,.1)'},
+  {id:12,title:'Alumni Connect 2023',desc:'Annual alumni networking event with 50+ alumni sharing industry insights.',cat:'farewell',icon:'🤝',date:'June 2023',color:'rgba(56,189,248,.06)'},
+];
+
+const CAT_COLORS={hackathon:'badge-yellow',workshop:'badge-blue',placement:'badge-green',sports:'badge-red',farewell:'badge badge-blue',all:''};
+let currentFilter='all';
+let lbIndex=0;
+let filteredItems=[];
+
+function filterGallery(cat,btn){
+  currentFilter=cat;
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGallery();
+}
+
+function renderGallery(){
+  filteredItems=currentFilter==='all'?SAMPLE_GALLERY:SAMPLE_GALLERY.filter(i=>i.cat===currentFilter);
+  const grid=document.getElementById('galleryGrid');
+  if(!filteredItems.length){grid.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="es-icon">🖼️</div><p>No items in this category yet.</p></div>';return;}
+  grid.innerHTML=filteredItems.map((item,i)=>`
+    <div class="gal-item reveal" onclick="openLightbox(${i})" style="animation-delay:${i*.05}s">
+      <div class="gal-bg" style="background:${item.color}">${item.icon}</div>
+      <div class="gal-overlay">
+        <div class="gal-info"><h4>${item.title}</h4><p>${item.date}</p></div>
+      </div>
+      <span class="gal-cat-badge badge ${CAT_COLORS[item.cat]||'badge-blue'}" style="text-transform:capitalize">${item.cat}</span>
+    </div>`).join('');
+  // Re-observe reveal elements
+  document.querySelectorAll('.gal-item.reveal').forEach(el=>{
+    el.style.opacity='0';el.style.transform='translateY(20px)';
+    new IntersectionObserver(([e])=>{
+      if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='none';
+        e.target.style.transition='opacity .5s ease,transform .5s ease';}
+    },{threshold:.1}).observe(el);
+  });
+}
+
+function openLightbox(i){
+  lbIndex=i;
+  const item=filteredItems[i];
+  document.getElementById('lbImg').textContent=item.icon;
+  document.getElementById('lbImg').style.background=item.color||'var(--card2)';
+  document.getElementById('lbTitle').textContent=item.title;
+  document.getElementById('lbDesc').textContent=item.desc+' · '+item.date;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox(e){
+  if(!e||e.target===document.getElementById('lightbox'))
+    document.getElementById('lightbox').classList.remove('open');
+}
+
+function lbNav(dir){
+  lbIndex=(lbIndex+dir+filteredItems.length)%filteredItems.length;
+  openLightbox(lbIndex);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')document.getElementById('lightbox').classList.remove('open');
+  if(e.key==='ArrowRight')lbNav(1);
+  if(e.key==='ArrowLeft')lbNav(-1);
+});
+
+renderGallery();
+</script>
+</body>
+</html>
