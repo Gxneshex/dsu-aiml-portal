@@ -2,9 +2,9 @@
    DSU AI&ML Portal — shared.js
    ═══════════════════════════════════════════════ */
 
-const API = window.location.hostname === 'localhost' 
-  ? 'http://localhost:5000/api' 
-  : '/api';
+const API = window.location.hostname === 'localhost'
+  ? 'http://localhost:5000/api'
+  : 'https://dsu-aiml-portal-1.onrender.com/api';
 
 /* ── PARTICLES ──────────────────────────────────────────── */
 (function(){
