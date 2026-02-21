@@ -74,57 +74,87 @@ async function initDB() {
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )`);
 
-  /* Seed students */
+  /* Seed students - Real data from 23AIMLA1 (3rd Year, Semester 5) */
   const stuRow = await get('SELECT COUNT(*) as n FROM students');
   if (stuRow.n === 0) {
     const students = [
-      ['2122AIML001','Aravind Ramasamy',     'III',5,'A','2003-04-12','aravind.r@dsu.edu.in',  '9876543210','O+', 8.7,89,'Dr. S. Ananthi',   'Active'],
-      ['2122AIML002','Priya Sundaram',       'III',5,'A','2003-07-22','priya.s@dsu.edu.in',    '9876543211','A+', 9.1,94,'Dr. S. Ananthi',   'Active'],
-      ['2122AIML003','Karthik Murugan',      'III',5,'B','2003-01-08','karthik.m@dsu.edu.in',  '9876543212','B+', 7.5,71,'Prof. R. Kavitha', 'Active'],
-      ['2122AIML004','Divya Krishnamurthy',  'III',5,'B','2003-11-30','divya.k@dsu.edu.in',    '9876543213','AB+',8.2,82,'Prof. R. Kavitha', 'Active'],
-      ['2122AIML005','Rohith Selvaraj',      'III',5,'A','2003-03-15','rohith.s@dsu.edu.in',   '9876543214','O-', 6.9,65,'Dr. S. Ananthi',   'Active'],
-      ['2122AIML006','Nithya Rajendran',     'III',5,'A','2003-06-20','nithya.r@dsu.edu.in',   '9876543215','B-', 8.9,91,'Dr. S. Ananthi',   'Active'],
-      ['2122AIML007','Surya Prakash',        'III',5,'B','2003-09-11','surya.p@dsu.edu.in',    '9876543216','A-', 7.8,77,'Prof. R. Kavitha', 'Active'],
-      ['2223AIML001','Meenakshi Pillai',     'II', 3,'A','2004-09-05','meena.p@dsu.edu.in',    '9876543220','A-', 9.3,97,'Dr. V. Rajkumar',  'Active'],
-      ['2223AIML002','Vishal Narayanan',     'II', 3,'A','2004-12-19','vishal.n@dsu.edu.in',   '9876543221','B-', 7.8,78,'Dr. V. Rajkumar',  'Active'],
-      ['2223AIML003','Lavanya Subramanian',  'II', 3,'B','2004-06-25','lavanya.s@dsu.edu.in',  '9876543222','O+', 8.5,91,'Prof. M. Priya',   'Active'],
-      ['2223AIML004','Harish Balaji',        'II', 3,'B','2004-02-14','harish.b@dsu.edu.in',   '9876543223','A+', 8.0,85,'Prof. M. Priya',   'Active'],
-      ['2223AIML005','Anitha Ravi',          'II', 3,'A','2004-08-30','anitha.r@dsu.edu.in',   '9876543224','AB-',9.0,93,'Dr. V. Rajkumar',  'Active'],
-      ['2324AIML001','Arjun Balakrishnan',   'I',  1,'A','2005-02-14','arjun.b@dsu.edu.in',    '9876543230','A+', 0.0,88,'Dr. S. Ananthi',   'Active'],
-      ['2324AIML002','Keerthana Murugesan',  'I',  1,'A','2005-05-18','keerthana.m@dsu.edu.in','9876543231','O+', 0.0,90,'Dr. S. Ananthi',   'Active'],
-      ['2324AIML003','Dinesh Prabhu',        'I',  1,'B','2005-03-22','dinesh.p@dsu.edu.in',   '9876543232','B+', 0.0,75,'Prof. R. Kavitha', 'Active'],
-      ['2021AIML001','Soundarya Rajan',      'IV', 7,'A','2002-08-10','soundarya.r@dsu.edu.in','9876543200','B+', 9.0,93,'Dr. V. Rajkumar',  'Active'],
-      ['2021AIML002','Elan Chezhiyan',       'IV', 7,'B','2002-05-27','elan.c@dsu.edu.in',     '9876543201','AB-',7.2,60,'Prof. R. Kavitha', 'Inactive'],
-      ['2021AIML003','Pavithra Mani',        'IV', 7,'A','2002-11-03','pavithra.m@dsu.edu.in', '9876543202','O-', 8.6,87,'Dr. V. Rajkumar',  'Active'],
+      ['11523110003','AGASH V','III',5,'A','2005-09-22','O+',0.0,85,'TBD','Active'],
+      ['11523110004','AGILAN R','III',5,'A','2006-01-21','11523110004@dsu.edu.in','9876540001','O+',0.0,85,'TBD','Active'],
+      ['11523110005','AKASH S','III',5,'A','2005-07-08','11523110005@dsu.edu.in','9876540002','O+',0.0,85,'TBD','Active'],
+      ['11523110008','ANNAMALAI S','III',5,'A','2005-02-02','11523110008@dsu.edu.in','9876540003','O+',0.0,85,'TBD','Active'],
+      ['11523110009','ARAVINTHARAJ G','III',5,'A','2005-06-07','11523110009@dsu.edu.in','9876540004','O+',0.0,85,'TBD','Active'],
+      ['11523110014','BANDARU BHAVYA SAI','III',5,'A','2005-07-19','11523110014@dsu.edu.in','9876540005','O+',0.0,85,'TBD','Active'],
+      ['11523110015','BATHINI HIMA','III',5,'A','2005-11-20','11523110015@dsu.edu.in','9876540006','O+',0.0,85,'TBD','Active'],
+      ['11523110017','BERIN JOEL J','III',5,'A','2006-04-13','11523110017@dsu.edu.in','9876540007','O+',0.0,85,'TBD','Active'],
+      ['11523110020','DASARATH R','III',5,'A','2005-09-17','11523110020@dsu.edu.in','9876540008','O+',0.0,85,'TBD','Active'],
+      ['11523110021','DEENA DHAYALAN K','III',5,'A','2006-05-22','11523110021@dsu.edu.in','9876540009','O+',0.0,85,'TBD','Active'],
+      ['11523110023','ESHWAR R','III',5,'A','2006-01-25','11523110023@dsu.edu.in','9876540010','O+',0.0,85,'TBD','Active'],
+      ['11523110026','GANESH R','III',5,'A','2005-09-06','11523110026@dsu.edu.in','9876540011','O+',0.0,85,'TBD','Active'],
+      ['11523110030','GOKUL KRISHNAN A','III',5,'A','2005-11-21','11523110030@dsu.edu.in','9876540012','O+',0.0,85,'TBD','Active'],
+      ['11523110031','GOLLA VAISHNAVI','III',5,'A','2005-01-07','11523110031@dsu.edu.in','9876540013','O+',0.0,85,'TBD','Active'],
+      ['11523110032','HARIPRASATH S','III',5,'A','2005-11-21','11523110032@dsu.edu.in','9876540014','O+',0.0,85,'TBD','Active'],
+      ['11523110033','HEMSHREE BHAGAVATHI S','III',5,'A','2006-05-31','11523110033@dsu.edu.in','9876540015','O+',0.0,85,'TBD','Active'],
+      ['11523110035','JEYASURYA S','III',5,'A','2006-01-01','11523110035@dsu.edu.in','9876540016','O+',0.0,85,'TBD','Active'],
+      ['11523110036','JOMAN L','III',5,'A','2006-05-09','11523110036@dsu.edu.in','9876540017','O+',0.0,85,'TBD','Active'],
+      ['11523110039','KARUNYAA C','III',5,'A','2006-08-10','11523110039@dsu.edu.in','9876540018','O+',0.0,85,'TBD','Active'],
+      ['11523110040','KISHORE E','III',5,'A','2006-05-02','11523110040@dsu.edu.in','9876540019','O+',0.0,85,'TBD','Active'],
+      ['11523110041','KRISHNANALLAMARUTHU L','III',5,'A','2003-08-21','11523110041@dsu.edu.in','9876540020','O+',0.0,85,'TBD','Active'],
+      ['11523110069','KUSUMANJALI SIDDI REDDY SIDDI REDDY','III',5,'A','2005-12-17','11523110069@dsu.edu.in','9876540021','O+',0.0,85,'TBD','Active'],
+      ['11523110044','LEKSHMI MANIYAN','III',5,'A','2002-09-28','11523110044@dsu.edu.in','9876540022','O+',0.0,85,'TBD','Active'],
+      ['11523110045','MADAVAN C','III',5,'A','2006-08-25','11523110045@dsu.edu.in','9876540023','O+',0.0,85,'TBD','Active'],
+      ['11523110047','MANONMANI R','III',5,'A','2005-09-30','11523110047@dsu.edu.in','9876540024','O+',0.0,85,'TBD','Active'],
+      ['11523110048','MATHESH M','III',5,'A','2006-01-23','11523110048@dsu.edu.in','9876540025','O+',0.0,85,'TBD','Active'],
+      ['11523110052','MOHAMMED SHAMEER M','III',5,'A','2005-10-26','11523110052@dsu.edu.in','9876540026','O+',0.0,85,'TBD','Active'],
+      ['11523110054','MURUGANANTHAM A','III',5,'A','2006-05-06','11523110054@dsu.edu.in','9876540027','O+',0.0,85,'TBD','Active'],
+      ['11523110106','NAGA JOSNA TADIBOAINA','III',5,'A','2005-08-18','11523110106@dsu.edu.in','9876540028','O+',0.0,85,'TBD','Active'],
+      ['11523110056','NAVYA C','III',5,'A','2005-10-07','11523110056@dsu.edu.in','9876540029','O+',0.0,85,'TBD','Active'],
+      ['11523110058','NIRANJAN KUMAR PR','III',5,'A','2005-10-08','11523110058@dsu.edu.in','9876540030','O+',0.0,85,'TBD','Active'],
+      ['11523110080','PARAMASIVAN V','III',5,'A','2006-01-18','11523110080@dsu.edu.in','9876540031','O+',0.0,85,'TBD','Active'],
+      ['11523110060','PARTHIBAN P','III',5,'A','2006-03-12','11523110060@dsu.edu.in','9876540032','O+',0.0,85,'TBD','Active'],
+      ['11523110082','PERUGU VINNY','III',5,'A','2003-07-16','11523110082@dsu.edu.in','9876540033','O+',0.0,85,'TBD','Active'],
+      ['11523110083','PRANAVAN M','III',5,'A','2006-03-19','11523110083@dsu.edu.in','9876540034','O+',0.0,85,'TBD','Active'],
+      ['11523110061','PRAVEEN A','III',5,'A','2006-03-17','11523110061@dsu.edu.in','9876540035','O+',0.0,85,'TBD','Active'],
+      ['11523110063','PULIGORU SUDHAKAR DEVIKA','III',5,'A','2006-05-24','11523110063@dsu.edu.in','9876540036','O+',0.0,85,'TBD','Active'],
+      ['11523110086','RAGAVI S','III',5,'A','2005-09-07','11523110086@dsu.edu.in','9876540037','O+',0.0,85,'TBD','Active'],
+      ['11523110087','RAHUL P','III',5,'A','2006-01-05','11523110087@dsu.edu.in','9876540038','O+',0.0,85,'TBD','Active'],
+      ['11523110089','RESHMA S','III',5,'A','2005-12-26','11523110089@dsu.edu.in','9876540039','O+',0.0,85,'TBD','Active'],
+      ['11523110090','SACHIN M','III',5,'A','2005-10-23','11523110090@dsu.edu.in','9876540040','O+',0.0,85,'TBD','Active'],
+      ['11523110091','SAKTHI MAHALAKSHMI K','III',5,'A','2006-06-26','11523110091@dsu.edu.in','9876540041','O+',0.0,85,'TBD','Active'],
+      ['11523110093','SANJAI S','III',5,'A','2005-12-08','11523110093@dsu.edu.in','9876540042','O+',0.0,85,'TBD','Active'],
+      ['11523110098','SHEIK ABDULLA A','III',5,'A','2005-06-21','11523110098@dsu.edu.in','9876540043','O+',0.0,85,'TBD','Active'],
+      ['11523110100','SIVAPRAKASH S','III',5,'A','2004-11-15','11523110100@dsu.edu.in','9876540044','O+',0.0,85,'TBD','Active'],
+      ['11523110101','SRI RAM K','III',5,'A','2005-09-14','11523110101@dsu.edu.in','9876540045','O+',0.0,85,'TBD','Active'],
+      ['11523110102','SUBASH NAGARAJ V','III',5,'A','2006-05-21','11523110102@dsu.edu.in','9876540046','O+',0.0,85,'TBD','Active'],
+      ['11523110109','THANGAMANI K','III',5,'A','2005-10-14','11523110109@dsu.edu.in','9876540047','O+',0.0,85,'TBD','Active'],
+      ['11523110110','VAISHALI M','III',5,'A','2006-08-17','11523110110@dsu.edu.in','9876540048','O+',0.0,85,'TBD','Active'],
+      ['11523110112','VIGNESH K','III',5,'A','2005-07-20','11523110112@dsu.edu.in','9876540049','O+',0.0,85,'TBD','Active'],
+      ['11523110114','VIMAL P','III',5,'A','2006-03-08','11523110114@dsu.edu.in','9876540050','O+',0.0,85,'TBD','Active'],
+      ['11523110115','VINOTHRAJ M','III',5,'A','2006-04-08','11523110115@dsu.edu.in','9876540051','O+',0.0,85,'TBD','Active'],
+      ['11523110116','VISHALI M','III',5,'A','2006-08-17','11523110116@dsu.edu.in','9876540052','O+',0.0,85,'TBD','Active'],
+      ['11523110117','YUVANSANKAR M','III',5,'A','2006-03-21','11523110117@dsu.edu.in','9876540053','O+',0.0,85,'TBD','Active'],
     ];
     for (const s of students) {
       await run(`INSERT INTO students
         (reg_no,name,year,semester,section,dob,email,phone,blood_group,cgpa,attendance,mentor,status)
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`, s);
     }
-    console.log('Student seed data inserted (18 students).');
+    console.log('Student seed data inserted (54 students from 23AIMLA1).');
   }
 
-  /* Seed faculty */
+  /* Seed faculty - Template data (update with actual faculty details) */
   const facRow = await get('SELECT COUNT(*) as n FROM faculty');
   if (facRow.n === 0) {
     const faculty = [
-      ['Dr. S. Ananthi',        'HOD & Professor',       'Ph.D (AI), M.E., B.E.',        18,'ananthi.s@dsu.edu.in',  '9876540001','Deep Learning, Neural Networks, Research Methods',1],
-      ['Prof. R. Kavitha',      'Associate Professor',    'M.E. (CSE), B.E.',             12,'kavitha.r@dsu.edu.in',  '9876540002','Natural Language Processing, Machine Learning, Python',0],
-      ['Dr. V. Rajkumar',       'Associate Professor',    'Ph.D (Data Science), M.Tech.', 15,'rajkumar.v@dsu.edu.in', '9876540003','Big Data Analytics, Cloud Computing, Database Systems',0],
-      ['Prof. M. Priya',        'Assistant Professor',    'M.Tech (IT), B.E.',             8,'priya.m@dsu.edu.in',    '9876540004','IoT and Embedded Systems, Computer Networks',0],
-      ['Dr. K. Senthilkumar',   'Professor',              'Ph.D (ML), M.E., B.E.',        20,'senthil.k@dsu.edu.in', '9876540005','Computer Vision, Image Processing, AI Fundamentals',0],
-      ['Prof. A. Vijayalakshmi','Assistant Professor',    'M.E. (CSE), B.E.',              6,'vijaya.a@dsu.edu.in',   '9876540006','Data Structures, Algorithms, Discrete Mathematics',0],
-      ['Prof. P. Suresh',       'Assistant Professor',    'M.Tech (AI), B.E.',             5,'suresh.p@dsu.edu.in',   '9876540007','Reinforcement Learning, Probability & Statistics',0],
-      ['Dr. R. Maheswari',      'Associate Professor',    'Ph.D (Networks), M.E.',        14,'mahes.r@dsu.edu.in',    '9876540008','Software Engineering, Agile Methods, Project Management',0],
-      ['Prof. T. Kalaivani',    'Assistant Professor',    'M.Sc (CS), B.Sc.',              7,'kalaivani.t@dsu.edu.in','9876540009','Mathematics for AI, Linear Algebra, Calculus',0],
+      ['Faculty Name 1','HOD & Professor','Ph.D, M.E., B.E.',0,'faculty1@dsu.edu.in','0000000000','Subject 1, Subject 2',1],
+      ['Faculty Name 2','Associate Professor','M.E., B.E.',0,'faculty2@dsu.edu.in','0000000000','Subject 3, Subject 4',0],
+      ['Faculty Name 3','Assistant Professor','M.Tech, B.E.',0,'faculty3@dsu.edu.in','0000000000','Subject 5, Subject 6',0],
     ];
     for (const f of faculty) {
       await run(`INSERT INTO faculty
         (name,designation,qualification,experience,email,phone,subjects,is_hod)
         VALUES (?,?,?,?,?,?,?,?)`, f);
     }
-    console.log('Faculty seed data inserted (9 faculty).');
+    console.log('Faculty seed data inserted (template data).');
   }
 }
 

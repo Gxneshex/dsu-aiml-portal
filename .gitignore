@@ -1,2 +1,3 @@
 node_modules/ 
 dsu_aiml.db 
+.env 
